@@ -1,1 +1,9 @@
 Copy to where './configure' can be ran, run ./buildscript-ios
+
+
+Makefile.am:
+
+strip:  all
+-        strip $(BINS)
++        $(STRIP) $(BINS)
+        -echo OK > /dev/null && test -x xhydra && strip xhydra || echo OK > /dev/null
