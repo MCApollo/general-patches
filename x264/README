@@ -1,0 +1,17 @@
+CC=aarch64-apple-darwin17-clang LD=aarch64-apple-darwin17-ld 
+AS="gas-preprocessor.pl -as-type clang -- aarch64-apple-darwin17-clang"
+./configure 
+--host=aarch64-apple-darwin17
+--enable-shared 
+--disable-lsmash --enable-static --enable-strip --disable-asm
+
+No scripts/diff for this one. Files are provided as a guide.
+
+** Steps **
+-> Grab a copy of gas-preprocessor from /ffmpeg/ 
+-> Run configure
+-> Edit config.mak (see file), make sure it has the right tools (gcc-ar for example is wrong)
+-> MAKE SURE $AS IS = "gas-preprocessor.pl -as-type clang -- <YOUR-TRIPLE>-clang". 
+	You /will/ get undefined symbols and go insane if this is not done!
+-> Edit the Makefile, $(AS) gets it wrong by doing 'clang -o common/foo.S bar'
+	The right syntax is 'clang -o common/foo.S -c bar' (see file)
