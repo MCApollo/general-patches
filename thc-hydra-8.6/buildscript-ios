@@ -1,0 +1,221 @@
+#!/bin/sh
+#
+# uname -s = Linux | OpenBSD | FreeBSD
+# uname -m = i636 or x86_64
+
+test -z "$CC" && CC=aarch64-apple-darwin17-clang
+
+FHS=""
+SIXFOUR=""
+DEBUG=""
+PREFIX=""
+NOSTRIP=""
+ORACLE_PATH=""
+ORACLE_IPATH=""
+WORACLE_PATH=""
+WORACLE_LIB_PATH=""
+SSL_PATH=""
+SSL_IPATH=""
+WSSL_PATH=""
+WSSL_LIB_PATH=""
+CURSES_PATH=""
+CURSES_IPATH=""
+CRYPTO_PATH=""
+IDN_PATH=""
+IDN_IPATH=""
+PR29_IPATH=""
+PCRE_PATH=""
+PCRE_IPATH=""
+POSTGRES_PATH=""
+FIREBIRD_PATH=""
+FIREBIRD_IPATH=""
+MYSQL_PATH=""
+MYSQL_IPATH=""
+AFP_PATH=""
+AFP_IPATH=""
+NCP_PATH=""
+NCP_IPATH=""
+SVN_PATH=""
+SVN_IPATH=""
+APR_IPATH=""
+SAPR3_PATH=""
+SAPR3_IPATH=""
+SSH_PATH=""
+SSH_IPATH=""
+NSL_PATH=""
+SOCKET_PATH=""
+MANDIR=""
+XHYDRA_SUPPORT=""
+
+if [ '!' "X" = "X$*" ]; then
+  while [ $# -gt 0 ] ; do
+    if [ "X" = "X$PREFIX" ]; then
+  	  PREFIX_TMP=`echo "$1"|sed 's/.*--prefix=//'`
+	  if [ "$PREFIX_TMP" != "$1" ]; then
+		  PREFIX=$PREFIX_TMP
+	  fi
+    fi
+    if [ "X" = "X$NOSTRIP" ]; then
+  	  NOSTRIP_TMP=`echo "$1"|sed 's/.*--nostrip//'`
+	  if [ -z "$NOSTRIP_TMP" ]; then
+		  NOSTRIP="yes"
+	  fi
+    fi
+    if [ "X" = "X$FHS" ]; then
+  	  FHS_TMP=`echo "$1"|sed 's/.*--fhs//'`
+	  if [ -z "$FHS_TMP" ]; then
+		  FHS="yes"
+	  fi
+    fi
+    if [ "X" = "X$DEBUG" ]; then
+  	  DEBUG_TMP=`echo "$1"|sed 's/.*--debug//'`
+	  if [ -z "$DEBUG_TMP" ]; then
+		  DEBUG="yes"
+	  fi
+    fi
+    if [ "X" = "X$XHYDRA_SUPPORT" ]; then
+       XHYDRA_SUPPORT_TMP=`echo "$1"|sed 's/.*--disable-xhydra//'`
+       if [ -z "$XHYDRA_SUPPORT_TMP" ]; then
+	     XHYDRA_SUPPORT="disable"
+       fi
+    fi
+    if [ "X" = "X$WORACLE_PATH" ]; then
+  	  WORACLE_PATH_TMP=`echo "$1"|sed 's/.*--with-oracle=//'`
+	  if [ "$WORACLE_PATH_TMP" != "$1" ]; then
+		  WORACLE_PATH="$WORACLE_PATH_TMP"
+	  fi
+    fi
+    if [ "X" = "X$WORACLE_LIB_PATH" ]; then
+  	  WORACLE_LIB_PATH_TMP=`echo "$1"|sed 's/.*--with-oracle-lib=//'`
+	  if [ "$WORACLE_LIB_PATH_TMP" != "$1" ]; then
+		  WORACLE_LIB_PATH="$WORACLE_LIB_PATH_TMP"
+	  fi
+    fi
+    shift
+  done
+fi
+
+echo
+echo "Starting hydra auto configuration ..."
+rm -f Makefile.in
+
+SYSS="Darwin"
+SYSO="Darwin"
+SIXFOUR=64
+
+STRIP="aarch64-apple-darwin17-strip"
+
+
+#echo "Checking for secure compile option support in $CC ..."
+#GCCSEC="no"
+#LDSEC="no"
+#GCCSECOPT="-fstack-protector-all --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2"
+#echo '#include <stdio.h>' > $TMPC.c
+#echo 'int main() { printf(""); return 0; }' >> $TMPC.c
+#$CC -pie -fPIE $GCCSEPOPT -o $TMPC $TMPC.c > /dev/null 2> $TMPC.c.err
+#test -x $TMPC && GCCSEC="yes"
+#grep -q fPI $TMPC.c.err || GCCSECOPT="-pie -fPIE $GCCSECOPT"
+#rm -f "$TMPC"
+#$CC $GCCSECOPT -Wl,-z,now -Wl,-z,relro -o $TMPC $TMPC.c > /dev/null 2> $TMPC.c.err
+#test -x $TMPC && { LDSEC="yes" ; GCCSECOPT="$GCCSECOPT -Wl,-z,now -Wl,-z,relro" ; }
+#rm -f $TMPC $TMPC.c $TMPC.c.err
+#echo "                                                  Compiling... $GCCSEC"
+#echo "                                                  Linking... $LDSEC"
+
+XDEFINES=""
+XLIBS=""
+XLIBPATHS=""
+XIPATHS=""
+
+# XXX
+XDEFINES="$XDEFINES -DLIBOPENSSL"
+XDEFINES="$XDEFINES -DLIBNCURSES"
+#XDEFINES="$XDEFINES -DLIBIDN -DHAVE_PR29_H"
+XDEFINES="$XDEFINES -DHAVE_PCRE"
+XDEFINES="$XDEFINES -DLIBSSH"
+XDEFINES="$XDEFINES -DHAVE_ZLIB"
+XDEFINES="$XDEFINES -I$HOME/iPhone-include/"
+
+XLIBS="$XLIBS -lz"
+XLIBS="$XLIBS -lncurses"
+XLIBS="$XLIBS -lssl -lcrypto"
+#XLIBS="$XLIBS -lidn" # --> != libidn2
+XLIBS="$XLIBS -lpcre"
+XLIBS="$XLIBS -lssh"
+XLIBS="$XLIBS -lresolv"
+
+if [ "X" = "X$XHYDRA_SUPPORT" -o "Xdisable" = "X$XHYDRA_SUPPORT" ]; then
+    XHYDRA_SUPPORT=""
+else
+    XHYDRA_SUPPORT="xhydra"
+fi
+
+if [ "X" != "X$FHS" ]; then
+  PREFIX=/usr
+  echo "Hydra will be installed into .../bin of: $PREFIX"
+  echo "  (according to the File System Hierarchy Standard)"
+  echo
+else
+  echo "Hydra will be installed into .../bin of: $PREFIX"
+  echo "  (change this by running ./configure --prefix=path)"
+  echo
+fi
+
+echo "Writing Makefile.in ..."
+if [ "X" != "X$FHS" ]; then
+  echo "MANDIR = /share/man/man1" >> Makefile.in
+  echo "DATADIR = /share/hydra" >> Makefile.in
+fi
+echo "XDEFINES=$XDEFINES $MATH" >> Makefile.in
+echo "XLIBS=$XLIBS" >> Makefile.in
+echo "XLIBPATHS=$XLIBPATHS" >> Makefile.in
+echo "XIPATHS=$XIPATHS" >> Makefile.in
+echo "PREFIX=$PREFIX" >> Makefile.in
+#if [ $XHYDRA_SUPPORT != "disable" ]; then
+echo "XHYDRA_SUPPORT=$XHYDRA_SUPPORT" >> Makefile.in
+#fi
+echo "LD=aarch64-apple-darwin17-ld" >> Makefile.in
+echo "CC=aarch64-apple-darwin17-clang" >> Makefile.in 
+echo "AR=aarch64-apple-darwin17-ar" >> Makefile.in 
+echo "STRIP=aarch64-apple-darwin17-strip" >> Makefile.in
+echo >> Makefile.in
+cat Makefile.unix > Makefile
+cat Makefile.in >> Makefile
+# ignore errors if this uname call fails
+### Current Cygwin is up to speed :-)
+WINDRES=""
+if [ "$SYSO" = "Cygwin" ]; then
+    echo
+    echo "Cygwin detected, if compilation fails just update your installation."
+    echo
+    WINDRES=`which windres`
+    test -x "$WINDRES" && {
+      echo "Windres found, will attach icons to hydra cygwin executables"
+      echo HYDRA_LOGO=hydra-logo.o >> Makefile
+      echo PWI_LOGO=pw-inspector-logo.o >> Makefile
+      windres hydra-logo.rc hydra-logo.o
+      windres pw-inspector-logo.rc pw-inspector-logo.o
+    }
+    test -x "$WINDRES" || {
+      WINDRES=""
+      echo Windres NOT found, you will not have pretty icon files in the hydra cygwin executables
+      echo
+    }
+    echo
+fi
+if [ "x$WINDRES" = "x" ]; then
+  echo HYDRA_LOGO= >> Makefile
+  echo PWI_LOGO= >> Makefile
+fi
+if [ "$GCCSEC" = "yes" ] && [ "$SYSS" != "SunOS" ]; then
+  echo "SEC=$GCCSECOPT" >> Makefile
+else
+  echo "SEC=" >> Makefile
+fi
+echo >> Makefile
+if [ "x$NOSTRIP" = "x" ]; then
+  cat Makefile.am >> Makefile
+else
+  cat Makefile.am | sed 's/^install:.*/install:	all/'  >> Makefile
+fi
+echo "now type \"make\""
