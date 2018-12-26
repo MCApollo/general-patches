@@ -1,0 +1,2 @@
+cd tools/lldb
+for i in $(grep -rl "\-lncurses") ; do sed -i 's/-lncurses/-lncurses -lpanel/' $i; done

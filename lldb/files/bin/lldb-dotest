@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+import subprocess
+import sys
+
+dotest_path = '/home/cade/llvm-clang-lldb/llvm-7.0.1/tools/lldb/test/dotest.py'
+dotest_args_str = '--arch=x86_64;-s;/home/cade/llvm-clang-lldb/llvm-7.0.1/host/lldb-test-traces;--build-dir;/home/cade/llvm-clang-lldb/llvm-7.0.1/host/lldb-test-build.noindex;-S;nm;-u;CXXFLAGS;-u;CFLAGS;--executable;/home/cade/llvm-clang-lldb/llvm-7.0.1/host/./bin/lldb;--dsymutil;/home/cade/llvm-clang-lldb/llvm-7.0.1/host/./bin/dsymutil;-C;/home/cade/llvm-clang-lldb/llvm-7.0.1/host/./bin/clang;--env;ARCHIVER=/usr/bin/ar;--env;OBJCOPY=/usr/bin/objcopy'
+
+if __name__ == '__main__':
+    wrapper_args = sys.argv[1:]
+    dotest_args = dotest_args_str.split(';')
+    # Build dotest.py command.
+    cmd = [dotest_path, '-q']
+    cmd.extend(dotest_args)
+    cmd.extend(wrapper_args)
+    # Invoke dotest.py and return exit code.
+    sys.exit(subprocess.call(cmd))

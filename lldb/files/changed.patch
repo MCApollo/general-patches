@@ -1,0 +1,56 @@
+diff -Naur llvm-7.0.1.src/tools/lldb/include/lldb/Utility/FileSpec.h llvm-7.0.1.src-orig/tools/lldb/include/lldb/Utility/FileSpec.h
+--- llvm-7.0.1.src/tools/lldb/include/lldb/Utility/FileSpec.h	2018-06-13 22:08:14.000000000 +0000
++++ llvm-7.0.1.src-orig/tools/lldb/include/lldb/Utility/FileSpec.h	2018-12-25 23:14:48.270802230 +0000
+@@ -563,7 +563,8 @@
+       llvm::sys::fs::file_type file_type, const FileSpec &spec)>
+       DirectoryCallback;
+ 
+-protected:
++//protected:
++public:
+   //------------------------------------------------------------------
+   // Convenience method for setting the file without changing the style.
+   //------------------------------------------------------------------
+diff -Naur llvm-7.0.1.src/tools/lldb/source/Plugins/Process/Utility/RegisterContextDarwin_arm64.cpp llvm-7.0.1.src-orig/tools/lldb/source/Plugins/Process/Utility/RegisterContextDarwin_arm64.cpp
+--- llvm-7.0.1.src/tools/lldb/source/Plugins/Process/Utility/RegisterContextDarwin_arm64.cpp	2018-05-18 16:19:52.000000000 +0000
++++ llvm-7.0.1.src-orig/tools/lldb/source/Plugins/Process/Utility/RegisterContextDarwin_arm64.cpp	2018-12-25 23:14:48.274802235 +0000
+@@ -10,6 +10,7 @@
+ 
+ #include "RegisterContextDarwin_arm64.h"
+ #include "RegisterContextDarwinConstants.h"
++#include <sys/sysctl.h>
+ 
+ // C++ Includes
+ // Other libraries and framework includes
+diff -Naur llvm-7.0.1.src/tools/lldb/tools/darwin-debug/darwin-debug.cpp llvm-7.0.1.src-orig/tools/lldb/tools/darwin-debug/darwin-debug.cpp
+--- llvm-7.0.1.src/tools/lldb/tools/darwin-debug/darwin-debug.cpp	2016-09-06 20:57:50.000000000 +0000
++++ llvm-7.0.1.src-orig/tools/lldb/tools/darwin-debug/darwin-debug.cpp	2018-12-25 23:14:48.274802235 +0000
+@@ -23,6 +23,7 @@
+ // on other systems.
+ //----------------------------------------------------------------------
+ #if defined(__APPLE__)
++#define SYSTEM_ALLOW_IOS 1
+ 
+ #include <crt_externs.h> // for _NSGetEnviron()
+ #include <getopt.h>
+diff -Naur llvm-7.0.1.src/tools/lldb/tools/debugserver/source/CMakeLists.txt llvm-7.0.1.src-orig/tools/lldb/tools/debugserver/source/CMakeLists.txt
+--- llvm-7.0.1.src/tools/lldb/tools/debugserver/source/CMakeLists.txt	2018-06-18 18:27:16.000000000 +0000
++++ llvm-7.0.1.src-orig/tools/lldb/tools/debugserver/source/CMakeLists.txt	2018-12-26 08:15:00.137609614 +0000
+@@ -184,7 +184,7 @@
+   endif()
+ endif()
+ 
+-if(IOS)
++if (IOS)
+   add_library(lldbDebugserverCommon_NonUI ${lldbDebugserverCommonSources})
+   target_link_libraries(lldbDebugserverCommon_NonUI
+                       INTERFACE ${COCOA_LIBRARY}
+@@ -197,7 +197,7 @@
+     set_property(TARGET lldbDebugserverCommon_NonUI APPEND PROPERTY
+                  COMPILE_DEFINITIONS HAVE_LIBCOMPRESSION)
+   endif()
+-
++  set(LLVM_OPTIONAL_SOURCES ${lldbDebugserverCommonSources})
+   add_lldb_tool(debugserver-nonui
+     debugserver.cpp
+ 

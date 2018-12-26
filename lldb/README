@@ -1,0 +1,27 @@
+How to Untar:
+	# LLVM
+	tar xvf llvm 
+	cd llvm-7.0.1.src/tools
+	# Clang
+	tar xvf cfe
+	mv cfe clang
+	# LLDB
+	tar xvf lldb-7.0.1
+	mv lldb-7.0.1.src lldb
+
+
+link.txt undefined symbols (Force a compile):
+        -framework Foundation -framework CoreFoundation -framework Security -lcompression -flat_namespace -undefined suppress
+
+mig files go here:
+        tools/lldb/tools/debugserver/source/mach_excServer.c
+        tools/lldb/tools/debugserver/source/mach_excUser.c
+        tools/lldb/tools/debugserver/source/mach_exc.h
+	Make mig a symlink to `true` or just edit the build.make if you don't have a mac.
+
+Compile llvm & clang tblgen for the host:
+	mkdir temp
+	cd temp
+	cmake ..
+	make clang-tblgen llvm-tblgen
+	cp bin/*tblgen <path/to/whatever>
