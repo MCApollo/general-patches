@@ -1,0 +1,4 @@
+I needed mig to build lldb, but don't have a Mac VM up (The build time also would be terrible.).
+GNU Mig only supports a few CPU/triples that are not my.
+
+	The next best thing was to build the damn thing for an iOS device for one file...
