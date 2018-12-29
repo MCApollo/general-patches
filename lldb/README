@@ -9,10 +9,6 @@ How to Untar:
 	tar xvf lldb-7.0.1
 	mv lldb-7.0.1.src lldb
 
-
-link.txt undefined symbols (Force a compile):
-        -framework Foundation -framework CoreFoundation -framework Security -lcompression -flat_namespace -undefined suppress
-
 mig files go here:
         tools/lldb/tools/debugserver/source/mach_excServer.c
         tools/lldb/tools/debugserver/source/mach_excUser.c
@@ -25,3 +21,8 @@ Compile llvm & clang tblgen for the host:
 	cmake ..
 	make clang-tblgen llvm-tblgen
 	cp bin/*tblgen <path/to/whatever>
+
+
+Updated cmake args:
+
+cmake -DBUILD_SHARED_LIBS=ON -DLLVM_TARGET_ARCH=AArch64 -DLLVM_TARGETS_TO_BUILD=AArch64 -DLLVM_DEFAULT_TARGET_TRIPLE=arm64-apple-darwin17.5.0 -DLLVM_ENABLE_THREADS=OFF -DLLVM_TABLEGEN=/home/XXX/llvm-clang-lldb/files/bin/llvm-tblgen -DCLANG_TABLEGEN=/home/XXX/llvm-clang-lldb/files/bin/clang-tblgen -DCMAKE_TOOLCHAIN_FILE=/home/XXX/llvm-clang-lldb/llvm/target/../../files/iOS.cmake -DCMAKE_FIND_ROOT_PATH=/home/XXX/toolchain/SDKS/ -DPKG_CONFIG_PATH=/home/XXX/toolchain/SDK/usr/local/lib/pkgconfig -DPKG_CONFIG_EXECUTABLE=/home/XXX/toolchain/bin/aarch64-apple-darwin17-pkg-config -DLIBXML2_LIBRARIES=/home/XXX/toolchain/SDK/usr/local/lib/libxml2.dylib -DLIBXML2_INCLUDE_DIR=/home/XXX/toolchain/SDK/usr/local/include/libxml2/ -DCURSES_LIBRARY=/home/XXX/toolchain/SDK/usr/local/lib/libncurses.dylib -DCURSES_INCLUDE_PATH=/home/XXX/toolchain/SDK/usr/local/include -DCURSES_PANEL_LIBRARY=/home/XXX/toolchain/SDK/usr/local/lib/libpanel.dylib -DLLDB_DISABLE_LIBEDIT=0 -DCMAKE_OSX_SYSROOT=/home/XXX/toolchain/SDK/ -DLLVM_INCLUDE_TEST=OFF -DCMAKE_C_FLAGS="-I/home/XXX/iPhone-include -DNO_XPC_SERVICES" -DCMAKE_CXX_FLAGS="-I/home/XXX/iPhone-include -DNO_XPC_SERVICES" .. -DCORE_FOUNDATION_LIBRARY=$HOME/toolchain/SDK/System/Library/Frameworks/CoreFoundation.framework -DFOUNDATION_LIBRARY=$HOME/toolchain/SDK/System/Library/Frameworks/Foundation.framework -DSECURITY_LIBRARY=$HOME/toolchain/SDK/System/Library/Frameworks/Security.framework -DBacktrace_INCLUDE_DIR=/home/XXX/toolchain/SDK/usr/local/include -DPYTHON_LIBRARY=/home/XXX/toolchain/SDK/usr/local/lib/libpython3.7m.dylib -DPYTHON_INCLUDE_DIR=$HOME/toolchain/SDK/usr/local/include/python3.7m/ -DIOS=0 -DCMAKE_SHARED_LINKER_FLAGS="-framework Foundation -framework CoreFoundation -framework Security -lpanel -lcompression -undefined dynamic_lookup" -Dlibedit_INCLUDE_DIRS=/home/XXX/toolchain/SDK/usr/include -Dlibedit_LIBRARIES=/home/XXX/toolchain/SDK/usr/lib/libedit.tbd -DCMAKE_INSTALL_PREFIX=/usr/local -DCOCOA_LIBRARY="" -DDEBUG_SYMBOLS_LIBRARY="" -DCORE_SERVICES_LIBRARY="" -DCMAKE_OSX_ARCHITECTURES="arm64"
